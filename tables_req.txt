@@ -1,0 +1,82 @@
+🧾 Objectives (for Flu Shots Dashboard 2022)
+
+Goal:
+Create a Flu Shots Dashboard for 2022 that shows:
+
+Total % of patients getting flu shots, stratified by:
+a. Age
+b. Race
+c. County (on a Map)
+d. Overall
+
+Running Total of Flu Shots over 2022
+
+Total Number of Flu Shots given in 2022
+
+List of Patients showing whether or not they received a flu shot
+Requirement:
+Only include patients who have been "Active at our hospital" during 2020–2022.
+
+>>
+ Create schema first (if not already created)
+CREATE SCHEMA IF NOT EXISTS "postgres"."Hospital_Data";
+
+Table 1: Patients
+CREATE TABLE IF NOT EXISTS "postgres"."Hospital_Data".patients
+(
+    id SERIAL PRIMARY KEY,
+    first VARCHAR(100),
+    last VARCHAR(100),
+    birthdate DATE,
+    deathdate DATE,
+    gender VARCHAR(10),
+    race VARCHAR(50),
+    county VARCHAR(100),
+    state VARCHAR(2),
+    zip_code VARCHAR(10),
+    phone VARCHAR(20),
+    email VARCHAR(255)
+);
+
+ Table 2: Encounters
+CREATE TABLE IF NOT EXISTS "postgres"."Hospital_Data".encounters
+(
+    encounter_id SERIAL PRIMARY KEY,
+    patient INTEGER REFERENCES "postgres"."Hospital_Data".patients(id),
+    start TIMESTAMP,
+    end_time TIMESTAMP,
+    provider_id INTEGER,
+    visit_type VARCHAR(50),
+    department VARCHAR(50),
+    diagnosis_code VARCHAR(20)
+);
+
+ Table 3: Immunizations
+CREATE TABLE IF NOT EXISTS "postgres"."Hospital_Data".immunizations
+(
+    immunization_id SERIAL PRIMARY KEY,
+    patient INTEGER REFERENCES "postgres"."Hospital_Data".patients(id),
+    code VARCHAR(10), -- e.g. '5302' for flu shot
+    description VARCHAR(255),
+    date TIMESTAMP,
+    provider_id INTEGER
+);
+
+ Table 4: Providers (optional, to link with encounters/immunizations)
+CREATE TABLE IF NOT EXISTS "postgres"."Hospital_Data".providers
+(
+    provider_id SERIAL PRIMARY KEY,
+    provider_name VARCHAR(255),
+    department VARCHAR(100),
+    specialty VARCHAR(100)
+);
+
+ Table 5: County_Lookup (optional, for mapping visualization)
+CREATE TABLE IF NOT EXISTS "postgres"."Hospital_Data".county_lookup
+(
+    county VARCHAR(100),
+    state VARCHAR(2),
+    latitude NUMERIC(10,6),
+    longitude NUMERIC(10,6),
+    population INTEGER
+);
